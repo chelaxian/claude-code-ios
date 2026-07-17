@@ -1,13 +1,38 @@
 #!/var/jb/usr/bin/zsh
+# Post-installation for Claude Code iOS (2.1.112 repack of the CyPwn tweak)
+echo "Setting up Claude Code..."
 CC=/var/jb/usr/local/lib/claude-code
 ENT="$CC/entitlements.xml"
 
-# point the bundled path at the imcynic node runtime
-ln -sf /var/jb/usr/local/lib/nodejs/node "$CC/node"
+mkdir -p /var/jb/var/mobile/.claude /var/jb/var/mobile/bin
+chown -R mobile:mobile /var/jb/var/mobile/.claude
+chown -R mobile:mobile "$CC"
 
-# sign ripgrep (already platform-patched to iOS) so the Grep tool works
+# sign the bundled iOS node (JIT + disable-library-validation)
+[ -f "$CC/node" ] && ldid -S"$ENT" "$CC/node"
+
+# sign ripgrep WITH entitlements so the Grep tool runs on iOS
 RG="$CC/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/rg"
-[ -f "$RG" ] && ldid -S"$ENT" "$RG" 2>/dev/null
+[ -f "$RG" ] && ldid -S"$ENT" "$RG"
+RGN="$CC/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/ripgrep.node"
+[ -f "$RGN" ] && ldid -S"$ENT" "$RGN"
+
+# PATH
+ZSHRC="/var/jb/var/mobile/.zshrc"
+if ! grep -q "/var/jb/usr/local/bin" "$ZSHRC" 2>/dev/null; then
+    echo ''                                        >> "$ZSHRC"
+    echo '# Claude Code'                            >> "$ZSHRC"
+    echo 'export PATH="/var/jb/usr/local/bin:$PATH"' >> "$ZSHRC"
+fi
+
+# home-screen app icon
+APP=/var/jb/Applications/ClaudeCode.app
+if [ -f "$APP/ClaudeCode" ]; then
+    ldid -S"$APP/entitlements.xml" "$APP/ClaudeCode"
+    chown -R root:wheel "$APP"
+    chmod 755 "$APP/ClaudeCode"
+    uicache -p "$APP" 2>/dev/null || true
+fi
 
 echo ""
 echo "Claude Code (2.1.112) installed."
