@@ -1,0 +1,59 @@
+#!/var/jb/usr/bin/zsh
+# Claude Code for iOS
+# Wrapper script with all required fixes for V8/WebAssembly on iOS
+
+# Configuration
+CLAUDE_HOME="/var/jb/usr/local/lib/claude-code"
+NODE_BIN="$CLAUDE_HOME/node"
+CLAUDE_CLI="$CLAUDE_HOME/node_modules/@anthropic-ai/claude-code/cli.js"
+SHIM="$CLAUDE_HOME/segmenter-shim.js"
+
+# Environment
+export HOME="${HOME:-/var/jb/var/mobile}"
+# export NO_COLOR=1  # disabled to restore ANSI colors
+export UV_THREADPOOL_SIZE=1
+
+# Load API key from config if exists
+if [ -f "$HOME/.claude/credentials" ]; then
+    source "$HOME/.claude/credentials"
+fi
+
+# Check authentication
+AUTH_OK=0
+
+# Check 1: Environment variable
+if [ -n "$ANTHROPIC_API_KEY" ]; then
+    AUTH_OK=1
+fi
+
+# Check 2: Credentials JSON file
+if [ -f "$HOME/.claude/.credentials.json" ]; then
+    # Check for OAuth token (Max/Pro plan)
+    if grep -q "claudeAiOauth" "$HOME/.claude/.credentials.json" 2>/dev/null; then
+        AUTH_OK=1
+    # Check for API key in JSON
+    elif grep -q "apiKey" "$HOME/.claude/.credentials.json" 2>/dev/null; then
+        AUTH_OK=1
+    fi
+fi
+
+if [ "$AUTH_OK" = "0" ]; then
+    echo "Claude Code is not authenticated."
+    echo ""
+    echo "Run 'claude-auth' to authenticate with:"
+    echo "  - API Key (direct billing)"
+    echo "  - Max/Pro Plan (subscription)"
+    echo ""
+    exit 1
+fi
+
+# Run Claude Code with iOS-specific V8 flags
+exec "$NODE_BIN" \
+    --no-wasm-code-gc \
+    --no-opt \
+    --no-sparkplug \
+    --single-threaded \
+    --liftoff \
+    --no-wasm-tier-up \
+    -r "$SHIM" \
+    "$CLAUDE_CLI" "$@"
