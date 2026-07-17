@@ -1,37 +1,37 @@
 # claude-code-ios
 
-Claude Code CLI on jailbroken iOS (Dopamine / rootless, `/var/jb`).
+Running Claude Code CLI on jailbroken iOS (Dopamine / rootless), plus the upgrade
+to the last JS release.
 
-iOS can't run the native builds, so this runs the last JS release (`2.1.112`) on
-Node with V8 JIT disabled. `2.1.113`+ are native-only and won't work.
+The base is the **CyPwn "Claude Code" tweak** — self-contained: it bundles Node,
+the wrappers and the `Intl.Segmenter` shim. The `bin/`/`lib/` files here are from
+that package, kept for reference. Credit: CyPwn (package), imcynic (iOS Node).
 
 ## Install
 
-Over SSH on the device:
+In Sileo/Zebra add the CyPwn repo and install Claude Code:
 
-```sh
-CC=/var/jb/usr/local/lib/claude-code
-mkdir -p $CC/node_modules/@anthropic-ai
+- Repo: `https://repo.cypwn.xyz`
+- Package: **Claude Code** (`xyz.cypwn.claude-code`)
 
-# 1. node (arm64, iOS-capable) at $CC/node, ad-hoc signed
-cp lib/entitlements.xml $CC/
-ldid -S$CC/entitlements.xml $CC/node
-
-# 2. claude-code package (last JS version)
-curl -L https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-2.1.112.tgz | tar xz -C /tmp
-mv /tmp/package $CC/node_modules/@anthropic-ai/claude-code
-
-# 3. Intl.Segmenter shim
-cp lib/segmenter-shim.js $CC/
-
-# 4. wrappers
-cp bin/claude bin/claude-auth /var/jb/usr/local/bin/
-chmod +x /var/jb/usr/local/bin/claude /var/jb/usr/local/bin/claude-auth
-```
-
-## Run
+Then:
 
 ```sh
 claude-auth   # API key or Max/Pro OAuth
 claude
 ```
+
+## Upgrade to 2.1.112
+
+The tweak ships 2.1.45. Native builds are Killed:9 on iOS and npm `2.1.113`+ are
+native-only, so `2.1.112` is the last usable JS release:
+
+```sh
+CC=/var/jb/usr/local/lib/claude-code
+curl -L https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-2.1.112.tgz | tar xz -C /tmp
+rm -rf $CC/node_modules/@anthropic-ai/claude-code
+mv /tmp/package $CC/node_modules/@anthropic-ai/claude-code
+claude --version   # 2.1.112
+```
+
+Don't run `claude install` — it pulls a native binary that can't exec on iOS.
