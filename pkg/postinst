@@ -1,0 +1,16 @@
+#!/var/jb/usr/bin/zsh
+CC=/var/jb/usr/local/lib/claude-code
+ENT="$CC/entitlements.xml"
+
+# point the bundled path at the imcynic node runtime
+ln -sf /var/jb/usr/local/lib/nodejs/node "$CC/node"
+
+# sign ripgrep (already platform-patched to iOS) so the Grep tool works
+RG="$CC/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/rg"
+[ -f "$RG" ] && ldid -S"$ENT" "$RG" 2>/dev/null
+
+echo ""
+echo "Claude Code (2.1.112) installed."
+echo "  claude-auth   # sign in"
+echo "  claude        # run"
+exit 0

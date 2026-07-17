@@ -3,3 +3,5 @@ node_modules/
 credentials
 .credentials.json
 *.bak*
+build/
+*.deb

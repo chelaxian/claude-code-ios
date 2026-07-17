@@ -1,0 +1,12 @@
+Package: io.github.ba31k.claude-code-ios
+Name: Claude Code (iOS)
+Version: 2.1.112-1
+Architecture: iphoneos-arm64
+Maintainer: ba31k
+Author: Anthropic (CLI); packaging by ba31k; Node by imcynic; based on the CyPwn tweak
+Section: Utilities
+Depends: firmware (>= 15.0), zsh, ldid, io.github.imcynic.nodejs
+Conflicts: xyz.cypwn.claude-code
+Replaces: xyz.cypwn.claude-code
+Description: Claude Code CLI on jailbroken iOS - last JS release (2.1.112) on Node with V8 JIT off; ripgrep/Grep patched to run on iOS.
+Homepage: https://github.com/ba31k/claude-code-ios
