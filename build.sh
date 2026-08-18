@@ -30,12 +30,31 @@ command -v ldid >/dev/null && ldid -S"$APP/entitlements.xml" "$RG" || true
 cp "$HERE/bin/claude" "$HERE/bin/claude-auth" "$STG/var/jb/usr/local/bin/"
 chmod 0755 "$STG/var/jb/usr/local/bin/claude" "$STG/var/jb/usr/local/bin/claude-auth"
 
-# 5. our control + postinst
+# 5. launcher: replace CyPwn's, which opens the unregistered "newterm3://"
+# scheme and exit(0)s when that fails, with ours driving NewTerm over "ssh://".
+# Built separately by build-launcher.sh (needs the iPhoneOS SDK).
+LAUNCHER="$HERE/build/ClaudeCode"
+if [ ! -f "$LAUNCHER" ]; then
+    echo "error: $LAUNCHER missing — run ./build-launcher.sh first" >&2
+    exit 1
+fi
+APPDIR="$STG/var/jb/Applications/ClaudeCode.app"
+cp "$LAUNCHER" "$APPDIR/ClaudeCode"
+chmod 0755 "$APPDIR/ClaudeCode"
+cp "$HERE/src/launcher.m" "$APPDIR/launcher.m"
+cp "$HERE/lib/launcher-entitlements.xml" "$APPDIR/entitlements.xml"
+# launcher.c is CyPwn's other, unused newterm3:// variant — drop it so the
+# bundle does not ship two contradictory sources.
+rm -f "$APPDIR/launcher.c"
+
+# 6. our control + postinst + ssh launch-chain setup
 cp "$HERE/pkg/control" "$STG/DEBIAN/control"
 cp "$HERE/pkg/postinst" "$STG/DEBIAN/postinst"
 chmod 0755 "$STG/DEBIAN/postinst"
+install -Dm0755 "$HERE/pkg/setup-ssh-launch.sh" \
+    "$STG/var/jb/usr/local/libexec/claude-code/setup-ssh-launch.sh"
 
-# 6. build
+# 7. build
 DEB="$HERE/claude-code-ios_${VER}-1_iphoneos-arm64.deb"
 dpkg-deb --root-owner-group -Zgzip --build "$STG" "$DEB"
 echo "built: $DEB"

@@ -1,0 +1,83 @@
+name: build
+
+# Builds the .deb on a macOS runner: the launcher needs the iPhoneOS SDK from
+# Xcode, which only exists there. Nothing about this requires a local Mac.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Publish the .deb as a GitHub release'
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install packaging tools
+        run: |
+          brew install dpkg ldid
+          # patch-macho-platform.py needs python3; the runner ships one.
+          python3 --version
+
+      - name: Show SDK
+        run: |
+          xcrun --sdk iphoneos --show-sdk-path
+          xcrun --sdk iphoneos --show-sdk-version
+
+      - name: Build launcher
+        run: ./build-launcher.sh
+
+      - name: Fetch base CyPwn deb
+        # build.sh repacks the CyPwn package: it supplies the bundled iOS Node,
+        # the app bundle and the shim. Only the launcher binary inside it is
+        # replaced by ours.
+        run: |
+          set -euo pipefail
+          URL="https://github.com/ba31k/claude-code-ios/releases/download/v2.1.112-1/claude-code-ios_2.1.112-1_iphoneos-arm64.deb"
+          curl -fL --retry 3 --retry-delay 5 -o base.deb "$URL"
+          ls -la base.deb
+
+      - name: Build package
+        run: ./build.sh base.deb
+
+      - name: Verify launcher inside the package
+        run: |
+          set -euo pipefail
+          mkdir -p verify
+          dpkg-deb -x ./claude-code-ios_*.deb verify
+          BIN=verify/var/jb/Applications/ClaudeCode.app/ClaudeCode
+          test -f "$BIN"
+          echo "--- strings: expect ssh://claude, no newterm3 ---"
+          strings "$BIN" | grep -E 'ssh://claude|ws\.hbang\.Terminal|uiopen' || {
+            echo "launcher does not contain the expected strings"; exit 1; }
+          if strings "$BIN" | grep -q 'newterm3://'; then
+            echo "stale newterm3 launcher still in the package"; exit 1
+          fi
+          echo "--- cdhash ---"
+          ldid -h "$BIN"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: claude-code-ios-deb
+          path: ./claude-code-ios_*.deb
+          if-no-files-found: error
+
+      - name: Release
+        if: github.event_name == 'workflow_dispatch' && inputs.release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          DEB=$(ls ./claude-code-ios_*.deb | head -1)
+          VER=$(basename "$DEB" | sed -E 's/^claude-code-ios_(.+)_iphoneos-arm64\.deb$/\1/')
+          gh release create "v${VER}-ssh" "$DEB" \
+            --title "v${VER} (ssh:// launcher)" \
+            --notes "Launcher rebuilt to drive NewTerm 3 via its real \`ssh://\` scheme instead of the unregistered \`newterm3://\` one." \
+            || gh release upload "v${VER}-ssh" "$DEB" --clobber

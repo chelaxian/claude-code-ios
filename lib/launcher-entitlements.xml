@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+    Entitlements for ClaudeCode.app's launcher binary. Deliberately the same
+    minimal set the original CyPwn launcher shipped with: the launcher only
+    draws a splash and spawns uiopen, so it needs no JIT and no sandbox escape.
+    (lib/entitlements.xml is the much broader set used for the bundled Node.)
+-->
+<plist version="1.0">
+<dict>
+    <key>platform-application</key>
+    <true/>
+    <key>com.apple.private.skip-library-validation</key>
+    <true/>
+    <key>com.apple.private.security.no-container</key>
+    <true/>
+</dict>
+</plist>

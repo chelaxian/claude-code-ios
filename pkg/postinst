@@ -25,12 +25,25 @@ if ! grep -q "/var/jb/usr/local/bin" "$ZSHRC" 2>/dev/null; then
     echo 'export PATH="/var/jb/usr/local/bin:$PATH"' >> "$ZSHRC"
 fi
 
+# ssh://claude launch chain (config + dedicated key + forced command)
+SETUP=/var/jb/usr/local/libexec/claude-code/setup-ssh-launch.sh
+[ -x "$SETUP" ] && "$SETUP"
+
 # home-screen app icon
 APP=/var/jb/Applications/ClaudeCode.app
 if [ -f "$APP/ClaudeCode" ]; then
     ldid -S"$APP/entitlements.xml" "$APP/ClaudeCode"
     chown -R root:wheel "$APP"
     chmod 755 "$APP/ClaudeCode"
+
+    # RootHide and other trustcache-enforcing jailbreaks reject a freshly
+    # re-signed binary until its cdhash is registered. `jbctl trustcache add`
+    # takes the hash itself, not a path.
+    if command -v jbctl >/dev/null 2>&1; then
+        CDHASH=$(ldid -h "$APP/ClaudeCode" 2>/dev/null | sed -n 's/^CDHash=//p' | head -1)
+        [ -n "$CDHASH" ] && jbctl trustcache add "$CDHASH" >/dev/null 2>&1 || true
+    fi
+
     uicache -p "$APP" 2>/dev/null || true
 fi
 
@@ -38,4 +51,7 @@ echo ""
 echo "Claude Code (2.1.112) installed."
 echo "  claude-auth   # sign in"
 echo "  claude        # run"
+echo ""
+echo "Tapping the home-screen icon opens NewTerm 3 and runs Claude Code"
+echo "over ssh://claude. NewTerm 3 must be installed."
 exit 0
