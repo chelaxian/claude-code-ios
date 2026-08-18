@@ -51,7 +51,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p verify
-          dpkg-deb -x ./claude-code-ios_*.deb verify
+          dpkg-deb -x ./com.ratush.claude-code-ios_*.deb verify
           BIN=verify/var/jb/Applications/ClaudeCode.app/ClaudeCode
           test -f "$BIN"
           echo "--- strings: expect ssh://claude, no newterm3 ---"
@@ -66,7 +66,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: claude-code-ios-deb
-          path: ./claude-code-ios_*.deb
+          path: ./com.ratush.claude-code-ios_*.deb
           if-no-files-found: error
 
       - name: Release
@@ -75,8 +75,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          DEB=$(ls ./claude-code-ios_*.deb | head -1)
-          VER=$(basename "$DEB" | sed -E 's/^claude-code-ios_(.+)_iphoneos-arm64\.deb$/\1/')
+          DEB=$(ls ./com.ratush.claude-code-ios_*.deb | head -1)
+          VER=$(basename "$DEB" | sed -E 's/^com\.ratush\.claude-code-ios_(.+)_iphoneos-arm64\.deb$/\1/')
           gh release create "v${VER}-ssh" "$DEB" \
             --title "v${VER} (ssh:// launcher)" \
             --notes "Launcher rebuilt to drive NewTerm 3 via its real \`ssh://\` scheme instead of the unregistered \`newterm3://\` one." \

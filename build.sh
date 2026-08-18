@@ -7,6 +7,7 @@
 set -euo pipefail
 CYPWN_DEB="${1:?usage: build.sh path/to/xyz.cypwn.claude-code_*.deb}"
 VER=2.1.112
+PKG_VER="2.1.112-2+ratu1"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 OUT="$HERE/build"; STG="$OUT/stage"
 APP="$STG/var/jb/usr/local/lib/claude-code"
@@ -58,6 +59,6 @@ cp "$HERE/pkg/setup-ssh-launch.sh" "$LIBEXEC/setup-ssh-launch.sh"
 chmod 0755 "$LIBEXEC/setup-ssh-launch.sh"
 
 # 7. build
-DEB="$HERE/claude-code-ios_${VER}-1_iphoneos-arm64.deb"
+DEB="$HERE/com.ratush.claude-code-ios_${PKG_VER}_iphoneos-arm64.deb"
 dpkg-deb --root-owner-group -Zgzip --build "$STG" "$DEB"
 echo "built: $DEB"
