@@ -15,11 +15,11 @@
 # command, so it cannot be used for a general shell and does not touch any
 # SSH access the user already has.
 #
-# RootHide subtlety: `/etc/passwd` says mobile's home is /var/mobile, but
-# rootless processes such as NewTerm commonly use /var/jb/var/mobile as HOME.
-# sshd can use either view, depending on its launch environment. We therefore
-# configure BOTH paths with the same key and forced command. Idempotent: safe
-# to run on every upgrade.
+# Dopamine/rootless subtlety: `/etc/passwd` says mobile's home is /var/mobile,
+# but rootless processes such as NewTerm commonly use /var/jb/var/mobile as
+# HOME. sshd can use either view, depending on its launch environment. We
+# therefore configure BOTH paths with the same key and forced command.
+# Idempotent: safe to run on every upgrade.
 set -u
 
 SSH_PORT="${CLAUDE_SSH_PORT:-2222}"   # sshd on this device also listens on 22

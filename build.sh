@@ -7,7 +7,7 @@
 set -euo pipefail
 CYPWN_DEB="${1:?usage: build.sh path/to/xyz.cypwn.claude-code_*.deb}"
 VER=2.1.112
-PKG_VER="2.1.112-3"
+PKG_VER="2.1.112-4"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 OUT="$HERE/build"; STG="$OUT/stage"
 APP="$STG/var/jb/usr/local/lib/claude-code"

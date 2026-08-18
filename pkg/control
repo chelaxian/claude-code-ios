@@ -1,10 +1,10 @@
 Package: com.ratush.claude-code-ios
 Name: Claude Code iOS (NewTerm launcher)
-Version: 2.1.112-3
+Version: 2.1.112-4
 Architecture: iphoneos-arm64
 Maintainer: ratu.sh
 Author: Anthropic (CLI); original iOS package by CyPwn/Bryan; repack by ba31k; NewTerm ssh launcher by ratu.sh
-Section: Development
+Section: Tweaks
 Depends: firmware (>= 15.0), zsh, ldid, openssh
 Conflicts: xyz.cypwn.claude-code, io.github.ba31k.claude-code-ios
 Replaces: xyz.cypwn.claude-code, io.github.ba31k.claude-code-ios

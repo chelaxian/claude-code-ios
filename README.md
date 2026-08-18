@@ -1,6 +1,6 @@
 # claude-code-ios
 
-Claude Code CLI on jailbroken iOS (Dopamine / rootless, `/var/jb`).
+Claude Code CLI on Dopamine / rootless iOS (`/var/jb`).
 
 iOS can't run the native builds, so this runs the last JS release (`2.1.112`) on
 Node with V8 JIT disabled. `2.1.113`+ are native-only and won't work.
