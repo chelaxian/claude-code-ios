@@ -83,7 +83,9 @@ BLOCK="Host $ALIAS
   LogLevel QUIET"
 
 touch "$CONFIG"
-if grep -qE "^Host[[:space:]]+$ALIAS[[:space:]]*\$" "$CONFIG" 2>/dev/null; then
+# Avoid a shell-escaped end-of-line regex here: zsh on the target reports
+# "bad output format specification" for the previous grep expression.
+if awk -v a="$ALIAS" '$1 == "Host" && $2 == a { found = 1 } END { exit !found }' "$CONFIG"; then
     # Drop the old block (from "Host claude" to the next Host / EOF), re-add.
     awk -v a="$ALIAS" '
         $1=="Host" && $2==a { skip=1; next }
