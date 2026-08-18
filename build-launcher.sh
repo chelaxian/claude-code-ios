@@ -25,6 +25,7 @@ xcrun --sdk iphoneos clang \
     -Wall \
     -framework UIKit \
     -framework Foundation \
+    -framework CoreGraphics \
     -o "$BIN" \
     "$SRC"
 

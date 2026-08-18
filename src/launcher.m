@@ -169,7 +169,7 @@ static BOOL RunUIOpen(NSString *flag, NSString *value) {
     UIViewController *vc = [[UIViewController alloc] init];
     vc.view.backgroundColor = [UIColor colorWithRed:0.95 green:0.56 blue:0.2 alpha:1.0];
 
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectZero];
+    UILabel *label = [[UILabel alloc] init];
     label.text = @"Starting Claude Code…";
     label.textColor = [UIColor whiteColor];
     label.textAlignment = NSTextAlignmentCenter;
