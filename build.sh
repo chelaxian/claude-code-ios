@@ -51,8 +51,11 @@ rm -f "$APPDIR/launcher.c"
 cp "$HERE/pkg/control" "$STG/DEBIAN/control"
 cp "$HERE/pkg/postinst" "$STG/DEBIAN/postinst"
 chmod 0755 "$STG/DEBIAN/postinst"
-install -Dm0755 "$HERE/pkg/setup-ssh-launch.sh" \
-    "$STG/var/jb/usr/local/libexec/claude-code/setup-ssh-launch.sh"
+# BSD install (macOS) has no -D, so make the directory ourselves.
+LIBEXEC="$STG/var/jb/usr/local/libexec/claude-code"
+mkdir -p "$LIBEXEC"
+cp "$HERE/pkg/setup-ssh-launch.sh" "$LIBEXEC/setup-ssh-launch.sh"
+chmod 0755 "$LIBEXEC/setup-ssh-launch.sh"
 
 # 7. build
 DEB="$HERE/claude-code-ios_${VER}-1_iphoneos-arm64.deb"
