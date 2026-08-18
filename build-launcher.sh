@@ -6,7 +6,7 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
-OUT="$HERE/build"
+OUT="$HERE/build-launcher"
 BIN="$OUT/ClaudeCode"
 SRC="$HERE/src/launcher.m"
 ENT="$HERE/lib/launcher-entitlements.xml"

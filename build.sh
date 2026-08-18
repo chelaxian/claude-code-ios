@@ -33,7 +33,7 @@ chmod 0755 "$STG/var/jb/usr/local/bin/claude" "$STG/var/jb/usr/local/bin/claude-
 # 5. launcher: replace CyPwn's, which opens the unregistered "newterm3://"
 # scheme and exit(0)s when that fails, with ours driving NewTerm over "ssh://".
 # Built separately by build-launcher.sh (needs the iPhoneOS SDK).
-LAUNCHER="$HERE/build/ClaudeCode"
+LAUNCHER="$HERE/build-launcher/ClaudeCode"
 if [ ! -f "$LAUNCHER" ]; then
     echo "error: $LAUNCHER missing — run ./build-launcher.sh first" >&2
     exit 1
