@@ -26,8 +26,8 @@ claude
 
 Tapping the Claude Code icon opens the fixed `ighostty://claude` handoff. This
 is intentionally not a command URL: it passes neither a command nor arguments.
-The trusted iGhostty app creates one terminal tab that executes the package-owned
-wrapper, which always runs Claude Code.
+The trusted iGhostty app creates one terminal tab that executes the package-owned,
+signed adapter, which discards terminal flags and always runs Claude Code.
 
 ## Build
 
@@ -48,7 +48,7 @@ pre-sign ripgrep.
 - `lib/segmenter-shim.js` — `Intl.Segmenter` polyfill for iOS
 - `lib/entitlements.xml` — JIT + disable-library-validation entitlements for node/rg
 - `src/launcher.m` — narrow home-screen iGhostty handoff
-- `pkg/ighostty-shell` — fixed shell wrapper invoked by iGhostty with `-il`
+- `src/ighostty-shell.c` — signed fixed shell adapter invoked by iGhostty with `-il`
 - `pkg/` — Debian control files, post-installation, and Mach-O platform patch
 
 ## Manual upgrade

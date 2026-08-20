@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+    The iGhostty shell adapter does not need special capabilities. Keeping a
+    separate, empty entitlement set gives it an ad-hoc CodeDirectory so the
+    daemon can exec it under trustcache-enforcing jailbreaks.
+-->
+<plist version="1.0">
+<dict/>
+</plist>

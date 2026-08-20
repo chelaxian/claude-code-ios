@@ -13,7 +13,7 @@ case "$CPU_ARCH" in
     *) echo "usage: $0 path/to/base.deb [arm64|arm64e]" >&2; exit 64 ;;
 esac
 VER=2.1.112
-PKG_VER="2.1.112-6"
+PKG_VER="2.1.112-7"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 OUT="$HERE/build-$CPU_ARCH"; STG="$OUT/stage"
 APP="$STG/var/jb/usr/local/lib/claude-code"
@@ -65,8 +65,13 @@ sed \
 cp "$HERE/pkg/postinst" "$STG/DEBIAN/postinst"
 chmod 0755 "$STG/DEBIAN/postinst"
 LIBEXEC="$STG/var/jb/usr/local/lib/claude-code"
+IGHOSTTY_SHELL="$HERE/build-launcher/ighostty-shell-$CPU_ARCH"
+if [ ! -f "$IGHOSTTY_SHELL" ]; then
+    echo "error: $IGHOSTTY_SHELL missing — run ./build-launcher.sh $CPU_ARCH first" >&2
+    exit 1
+fi
 mkdir -p "$LIBEXEC"
-cp "$HERE/pkg/ighostty-shell" "$LIBEXEC/ighostty-shell"
+cp "$IGHOSTTY_SHELL" "$LIBEXEC/ighostty-shell"
 chmod 0755 "$LIBEXEC/ighostty-shell"
 rm -f "$STG/var/jb/usr/local/libexec/claude-code/setup-ssh-launch.sh"
 

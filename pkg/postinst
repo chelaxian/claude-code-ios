@@ -25,13 +25,21 @@ if ! grep -q "/var/jb/usr/local/bin" "$ZSHRC" 2>/dev/null; then
     echo 'export PATH="/var/jb/usr/local/bin:$PATH"' >> "$ZSHRC"
 fi
 
-# iGhostty invokes the package-owned fixed shell wrapper with `-il` when its
-# documented ighostty://claude URL handoff is opened. It is intentionally not
-# a generic command bridge and is owned by root so mobile cannot replace it.
+# iGhostty invokes this package-owned, fixed Mach-O shell adapter with `-il`
+# when its documented ighostty://claude URL handoff is opened. The adapter
+# discards those flags and starts only Claude. It is not a command bridge.
 IGHOSTTY_SHELL="$CC/ighostty-shell"
 if [ -f "$IGHOSTTY_SHELL" ]; then
+    ldid -S "$IGHOSTTY_SHELL"
     chown root:wheel "$IGHOSTTY_SHELL" 2>/dev/null || true
     chmod 755 "$IGHOSTTY_SHELL"
+
+    # RootHide and other trustcache-enforcing jailbreaks can reject a newly
+    # signed helper even when the main app is trusted. Register its cdhash too.
+    if command -v jbctl >/dev/null 2>&1; then
+        CDHASH=$(ldid -h "$IGHOSTTY_SHELL" 2>/dev/null | sed -n 's/^CDHash=//p' | head -1)
+        [ -n "$CDHASH" ] && jbctl trustcache add "$CDHASH" >/dev/null 2>&1 || true
+    fi
 fi
 
 # home-screen app icon

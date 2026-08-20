@@ -16,8 +16,11 @@ esac
 HERE="$(cd "$(dirname "$0")" && pwd)"
 OUT="$HERE/build-launcher"
 BIN="$OUT/ClaudeCode-$ARCH"
+SHELL_BIN="$OUT/ighostty-shell-$ARCH"
 SRC="$HERE/src/launcher.m"
+SHELL_SRC="$HERE/src/ighostty-shell.c"
 ENT="$HERE/lib/launcher-entitlements.xml"
+SHELL_ENT="$HERE/lib/ighostty-shell-entitlements.xml"
 
 mkdir -p "$OUT"
 
@@ -42,9 +45,30 @@ lipo -info "$BIN"
 ldid -S"$ENT" "$BIN"
 chmod 755 "$BIN"
 
-echo "--- entitlements ---"
+# iGhostty's root daemon execs the configured shell directly. On device,
+# execution of a #! script is denied in that context, so use a minimal signed
+# Mach-O adapter which ignores iGhostty's `-il` flags and invokes only Claude.
+xcrun --sdk iphoneos clang \
+    -arch "$ARCH" \
+    -isysroot "$SDK" \
+    -mios-version-min=14.0 \
+    -O2 \
+    -Wall \
+    -o "$SHELL_BIN" \
+    "$SHELL_SRC"
+
+lipo -info "$SHELL_BIN"
+ldid -S"$SHELL_ENT" "$SHELL_BIN"
+chmod 755 "$SHELL_BIN"
+
+echo "--- launcher entitlements ---"
 ldid -e "$BIN"
-echo "--- cdhash ---"
+echo "--- launcher cdhash ---"
 ldid -h "$BIN"
+echo "--- iGhostty shell adapter entitlements ---"
+ldid -e "$SHELL_BIN"
+echo "--- iGhostty shell adapter cdhash ---"
+ldid -h "$SHELL_BIN"
 
 echo "built: $BIN"
+echo "built: $SHELL_BIN"

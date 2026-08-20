@@ -78,7 +78,10 @@ jobs:
           ldid -h "$BIN"
           SHELL=verify/var/jb/usr/local/lib/claude-code/ighostty-shell
           test -x "$SHELL"
-          grep -qx 'exec /var/jb/usr/local/bin/claude' "$SHELL"
+          lipo -info "$SHELL" | grep -w '${{ matrix.cpu_arch }}'
+          ldid -h "$SHELL"
+          strings "$SHELL" | grep -Fx '/var/jb/usr/bin/zsh'
+          strings "$SHELL" | grep -Fx '/var/jb/usr/local/bin/claude'
           test "$(dpkg-deb -f "$DEB" Depends)" = 'firmware (>= 15.0), zsh, ldid, wiki.qaq.ighostty (>= 0.2.5)'
 
       - uses: actions/upload-artifact@v4

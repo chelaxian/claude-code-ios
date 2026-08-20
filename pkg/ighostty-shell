@@ -1,5 +1,4 @@
-#!/var/jb/usr/bin/zsh
-# iGhostty invokes a configured shell as `shell -il`. This wrapper deliberately
-# accepts those shell flags and always replaces itself with the fixed Claude
-# CLI wrapper. It is not a general command dispatcher.
-exec /var/jb/usr/local/bin/claude
+# Retained as source documentation for the former script adapter.
+# iGhostty's privileged daemon receives EPERM when execve'ing a #! script on
+# Dopamine, so the package now ships the signed Mach-O adapter built from
+# src/ighostty-shell.c instead. It ignores `-il` and always starts Claude.
