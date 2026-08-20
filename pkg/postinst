@@ -25,9 +25,14 @@ if ! grep -q "/var/jb/usr/local/bin" "$ZSHRC" 2>/dev/null; then
     echo 'export PATH="/var/jb/usr/local/bin:$PATH"' >> "$ZSHRC"
 fi
 
-# ssh://claude launch chain (config + dedicated key + forced command)
-SETUP=/var/jb/usr/local/libexec/claude-code/setup-ssh-launch.sh
-[ -x "$SETUP" ] && "$SETUP"
+# iGhostty invokes the package-owned fixed shell wrapper with `-il` when its
+# documented ighostty://claude URL handoff is opened. It is intentionally not
+# a generic command bridge and is owned by root so mobile cannot replace it.
+IGHOSTTY_SHELL="$CC/ighostty-shell"
+if [ -f "$IGHOSTTY_SHELL" ]; then
+    chown root:wheel "$IGHOSTTY_SHELL" 2>/dev/null || true
+    chmod 755 "$IGHOSTTY_SHELL"
+fi
 
 # home-screen app icon
 APP=/var/jb/Applications/ClaudeCode.app
@@ -52,6 +57,6 @@ echo "Claude Code (2.1.112) installed."
 echo "  claude-auth   # sign in"
 echo "  claude        # run"
 echo ""
-echo "Tapping the home-screen icon opens NewTerm 3 and runs Claude Code"
-echo "over ssh://claude. NewTerm 3 must be installed."
+echo "Tapping the home-screen icon opens Claude Code in iGhostty."
+echo "iGhostty 0.2.5 or later is required."
 exit 0

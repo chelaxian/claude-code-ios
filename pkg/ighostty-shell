@@ -1,0 +1,5 @@
+#!/var/jb/usr/bin/zsh
+# iGhostty invokes a configured shell as `shell -il`. This wrapper deliberately
+# accepts those shell flags and always replaces itself with the fixed Claude
+# CLI wrapper. It is not a general command dispatcher.
+exec /var/jb/usr/local/bin/claude

@@ -69,13 +69,17 @@ jobs:
           test -f "$BIN"
           echo "--- launcher architecture ---"
           lipo -info "$BIN" | grep -w '${{ matrix.cpu_arch }}'
-          echo "--- strings: expect ssh://claude, no newterm3 ---"
-          strings "$BIN" | grep -E 'ssh://claude|ws\.hbang\.Terminal|uiopen' || {
+          echo "--- strings: expect fixed iGhostty handoff, no NewTerm ---"
+          strings "$BIN" | grep -E 'ighostty://claude|wiki\.qaq\.iGhostty|uiopen' || {
             echo "launcher does not contain the expected strings"; exit 1; }
-          if strings "$BIN" | grep -q 'newterm3://'; then
-            echo "stale newterm3 launcher still in the package"; exit 1
+          if strings "$BIN" | grep -qE 'newterm3://|ssh://claude|ws\.hbang\.Terminal'; then
+            echo "stale NewTerm launcher string remains in the package"; exit 1
           fi
           ldid -h "$BIN"
+          SHELL=verify/var/jb/usr/local/lib/claude-code/ighostty-shell
+          test -x "$SHELL"
+          grep -qx 'exec /var/jb/usr/local/bin/claude' "$SHELL"
+          test "$(dpkg-deb -f "$DEB" Depends)" = 'firmware (>= 15.0), zsh, ldid, wiki.qaq.ighostty (>= 0.2.5)'
 
       - uses: actions/upload-artifact@v4
         with:
@@ -104,5 +108,5 @@ jobs:
           VER=$(basename artifacts/com.ratush.claude-code-ios_*_iphoneos-arm64.deb | sed -E 's/^com\.ratush\.claude-code-ios_(.+)_iphoneos-arm64\.deb$/\1/')
           gh release create "v${VER}" artifacts/*.deb \
             --title "v${VER} — Dopamine and RootHide" \
-            --notes "Claude Code iOS launcher rebuilt to drive NewTerm 3 via its supported \`ssh://\` scheme. Includes \`iphoneos-arm64\` for Dopamine rootless and \`iphoneos-arm64e\` for RootHide." \
+            --notes "Claude Code iOS launcher opens iGhostty through the fixed \`ighostty://claude\` handoff, with no arbitrary command or arguments. Includes \`iphoneos-arm64\` for Dopamine rootless and \`iphoneos-arm64e\` for RootHide." \
             || gh release upload "v${VER}" artifacts/*.deb --clobber

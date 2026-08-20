@@ -1,13 +1,13 @@
 Package: com.ratush.claude-code-ios
-Name: Claude Code iOS (NewTerm launcher)
-Version: 2.1.112-5
+Name: Claude Code iOS (iGhostty launcher)
+Version: 2.1.112-6
 Architecture: iphoneos-arm64
 Maintainer: ratu.sh
-Author: Anthropic (CLI); original iOS package by CyPwn/Bryan; repack by ba31k; NewTerm ssh launcher by ratu.sh
+Author: Anthropic (CLI); original iOS package by CyPwn/Bryan; repack by ba31k; iGhostty launcher by ratu.sh
 Section: Tweaks
-Depends: firmware (>= 15.0), zsh, ldid, openssh
+Depends: firmware (>= 15.0), zsh, ldid, wiki.qaq.ighostty (>= 0.2.5)
 Conflicts: xyz.cypwn.claude-code, io.github.ba31k.claude-code-ios
 Replaces: xyz.cypwn.claude-code, io.github.ba31k.claude-code-ios
 Provides: claude-code
-Description: Claude Code CLI on jailbroken iOS. Launches NewTerm 3 through its supported ssh:// scheme instead of the broken newterm3:// URL, so tapping the home-screen app starts Claude Code. Based on the last JS release (2.1.112), bundled iOS Node with V8 JIT off, and iOS-patched ripgrep.
+Description: Claude Code CLI on jailbroken iOS. Tapping the home-screen app opens Claude Code in iGhostty through iGhostty's fixed ighostty://claude handoff, which accepts no arbitrary command or arguments. Based on the last JS release (2.1.112), bundled iOS Node with V8 JIT off, and iOS-patched ripgrep.
 Homepage: https://github.com/chelaxian/claude-code-ios

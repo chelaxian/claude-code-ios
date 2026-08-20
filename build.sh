@@ -13,7 +13,7 @@ case "$CPU_ARCH" in
     *) echo "usage: $0 path/to/base.deb [arm64|arm64e]" >&2; exit 64 ;;
 esac
 VER=2.1.112
-PKG_VER="2.1.112-5"
+PKG_VER="2.1.112-6"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 OUT="$HERE/build-$CPU_ARCH"; STG="$OUT/stage"
 APP="$STG/var/jb/usr/local/lib/claude-code"
@@ -38,9 +38,9 @@ command -v ldid >/dev/null && ldid -S"$APP/entitlements.xml" "$RG" || true
 cp "$HERE/bin/claude" "$HERE/bin/claude-auth" "$STG/var/jb/usr/local/bin/"
 chmod 0755 "$STG/var/jb/usr/local/bin/claude" "$STG/var/jb/usr/local/bin/claude-auth"
 
-# 5. launcher: replace CyPwn's, which opens the unregistered "newterm3://"
-# scheme and exit(0)s when that fails, with ours driving NewTerm over "ssh://".
-# Built separately by build-launcher.sh (needs the iPhoneOS SDK).
+# 5. launcher: replace CyPwn's broken newterm3:// launcher with the narrow,
+# documented ighostty://claude handoff. Built separately by build-launcher.sh
+# (needs the iPhoneOS SDK).
 LAUNCHER="$HERE/build-launcher/ClaudeCode-$CPU_ARCH"
 if [ ! -f "$LAUNCHER" ]; then
     echo "error: $LAUNCHER missing — run ./build-launcher.sh $CPU_ARCH first" >&2
@@ -55,20 +55,20 @@ cp "$HERE/lib/launcher-entitlements.xml" "$APPDIR/entitlements.xml"
 # bundle does not ship two contradictory sources.
 rm -f "$APPDIR/launcher.c"
 
-# 6. control + postinst + ssh launch-chain setup. The two packages retain the
+# 6. control + postinst + fixed iGhostty shell. The two packages retain the
 # same Package id so the APT site can group them into one card; only their
 # architecture and user-facing environment note differ.
 sed \
     -e "s/^Architecture: .*/Architecture: $DEB_ARCH/" \
-    -e "s/^Description: .*/Description: Claude Code CLI for $FLAVOR. Launches NewTerm 3 through its supported ssh:\/\/ scheme instead of the broken newterm3:\/\/ URL, so tapping the home-screen app starts Claude Code. Based on the last JS release (2.1.112), bundled iOS Node with V8 JIT off, and iOS-patched ripgrep./" \
+    -e "s/^Description: .*/Description: Claude Code CLI for $FLAVOR. Tapping the home-screen app opens Claude Code in iGhostty through iGhostty's fixed ighostty:\/\/claude handoff, which accepts no arbitrary command or arguments. Based on the last JS release (2.1.112), bundled iOS Node with V8 JIT off, and iOS-patched ripgrep./" \
     "$HERE/pkg/control" > "$STG/DEBIAN/control"
 cp "$HERE/pkg/postinst" "$STG/DEBIAN/postinst"
 chmod 0755 "$STG/DEBIAN/postinst"
-# BSD install (macOS) has no -D, so make the directory ourselves.
-LIBEXEC="$STG/var/jb/usr/local/libexec/claude-code"
+LIBEXEC="$STG/var/jb/usr/local/lib/claude-code"
 mkdir -p "$LIBEXEC"
-cp "$HERE/pkg/setup-ssh-launch.sh" "$LIBEXEC/setup-ssh-launch.sh"
-chmod 0755 "$LIBEXEC/setup-ssh-launch.sh"
+cp "$HERE/pkg/ighostty-shell" "$LIBEXEC/ighostty-shell"
+chmod 0755 "$LIBEXEC/ighostty-shell"
+rm -f "$STG/var/jb/usr/local/libexec/claude-code/setup-ssh-launch.sh"
 
 # 7. build
 DEB="$HERE/com.ratush.claude-code-ios_${PKG_VER}_${DEB_ARCH}.deb"
