@@ -107,6 +107,7 @@ jobs:
           ls -la artifacts
           VER=$(basename artifacts/com.ratush.claude-code-ios_*_iphoneos-arm64.deb | sed -E 's/^com\.ratush\.claude-code-ios_(.+)_iphoneos-arm64\.deb$/\1/')
           gh release create "v${VER}" artifacts/*.deb \
+            --repo "$GITHUB_REPOSITORY" \
             --title "v${VER} — Dopamine and RootHide" \
             --notes "Claude Code iOS launcher opens iGhostty through the fixed \`ighostty://claude\` handoff, with no arbitrary command or arguments. Includes \`iphoneos-arm64\` for Dopamine rootless and \`iphoneos-arm64e\` for RootHide." \
-            || gh release upload "v${VER}" artifacts/*.deb --clobber
+            || gh release upload "v${VER}" artifacts/*.deb --repo "$GITHUB_REPOSITORY" --clobber
