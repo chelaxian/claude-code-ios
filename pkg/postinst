@@ -66,5 +66,5 @@ echo "  claude-auth   # sign in"
 echo "  claude        # run"
 echo ""
 echo "Tapping the home-screen icon opens Claude Code in iGhostty."
-echo "iGhostty 0.2.5 or later is required."
+echo "iGhostty 0.2.6 or later is required."
 exit 0

@@ -1,11 +1,11 @@
 Package: com.ratush.claude-code-ios
 Name: Claude Code iOS (iGhostty launcher)
-Version: 2.1.112-7
+Version: 2.1.112-8
 Architecture: iphoneos-arm64
 Maintainer: ratu.sh
 Author: Anthropic (CLI); original iOS package by CyPwn/Bryan; repack by ba31k; iGhostty launcher by ratu.sh
 Section: Tweaks
-Depends: firmware (>= 15.0), zsh, ldid, wiki.qaq.ighostty (>= 0.2.5)
+Depends: firmware (>= 15.0), zsh, ldid, wiki.qaq.ighostty (>= 0.2.6)
 Conflicts: xyz.cypwn.claude-code, io.github.ba31k.claude-code-ios
 Replaces: xyz.cypwn.claude-code, io.github.ba31k.claude-code-ios
 Provides: claude-code

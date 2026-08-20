@@ -16,7 +16,7 @@ ripgrep/Grep for iOS, restores colours, and opens the home-screen app in
 ## Install
 
 Install the matching architecture package through Sileo or Zebra. It replaces
-`xyz.cypwn.claude-code` and requires `wiki.qaq.ighostty` version 0.2.5 or later.
+`xyz.cypwn.claude-code` and requires `wiki.qaq.ighostty` version 0.2.6 or later.
 Both packages are available from [ios.ratu.sh](https://ios.ratu.sh/).
 
 ```sh
@@ -26,8 +26,8 @@ claude
 
 Tapping the Claude Code icon opens the fixed `ighostty://claude` handoff. This
 is intentionally not a command URL: it passes neither a command nor arguments.
-The trusted iGhostty app creates one terminal tab that executes the package-owned,
-signed adapter, which discards terminal flags and always runs Claude Code.
+The trusted iGhostty app creates or focuses one Claude terminal tab. The
+package-owned signed adapter discards terminal flags and always runs Claude Code.
 
 ## Build
 

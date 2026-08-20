@@ -13,7 +13,7 @@ case "$CPU_ARCH" in
     *) echo "usage: $0 path/to/base.deb [arm64|arm64e]" >&2; exit 64 ;;
 esac
 VER=2.1.112
-PKG_VER="2.1.112-7"
+PKG_VER="2.1.112-8"
 HERE="$(cd "$(dirname "$0")" && pwd)"
 OUT="$HERE/build-$CPU_ARCH"; STG="$OUT/stage"
 APP="$STG/var/jb/usr/local/lib/claude-code"

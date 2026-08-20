@@ -1,7 +1,7 @@
 //
 //  ClaudeCode.app launcher
 //
-//  iGhostty 0.2.5 provides the narrow public URL handoff `ighostty://claude`.
+//  iGhostty 0.2.6 provides the narrow public URL handoff `ighostty://claude`.
 //  It contains no command or arguments. The trusted iGhostty app owns the
 //  authenticated XPC connection to its root daemon and opens only the fixed
 //  Claude shell wrapper supplied by this package.
@@ -19,7 +19,6 @@
 extern char **environ;
 
 static NSString *const kIghosttyClaudeURL = @"ighostty://claude";
-static NSString *const kIghosttyBundleID = @"wiki.qaq.iGhostty";
 
 // Candidate uiopen locations: rootless jailbreaks put it under /var/jb.
 static NSString *const kUIOpenPaths[] = {
@@ -28,10 +27,9 @@ static NSString *const kUIOpenPaths[] = {
 };
 static const int kUIOpenPathCount = (int)(sizeof(kUIOpenPaths) / sizeof(kUIOpenPaths[0]));
 
-// The first call starts iGhostty on a cold device; the second is routed to the
-// already-running scene. iGhostty also handles the URL in connectionOptions,
-// but retrying makes SpringBoard handoff failures visible instead of silent.
-static const NSTimeInterval kWarmupDelay = 0.8;
+// One URL request lets UIKit launch or foreground iGhostty and deliver the
+// intent to the same scene. Do not pre-launch it by bundle ID: a cold regular
+// launch creates iGhostty's default tab before the Claude URL creates its tab.
 static const NSTimeInterval kRetryDelays[] = { 1.0, 2.0 };
 static const int kRetryCount = (int)(sizeof(kRetryDelays) / sizeof(kRetryDelays[0]));
 
@@ -105,22 +103,8 @@ static BOOL RunUIOpen(NSString *flag, NSString *value) {
         }
 
         [self setStatus:@"Could not open iGhostty.\n\n"
-                         "Install iGhostty 0.2.5 or later,\n"
+                         "Install iGhostty 0.2.6 or later,\n"
                          "then reinstall Claude Code."];
-    });
-}
-
-- (void)launchIghosttyThen:(void (^)(void))next {
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-        BOOL launched = RunUIOpen(@"--bundleid", kIghosttyBundleID);
-        if (launched) {
-            [self setStatus:@"Opening iGhostty…"];
-        }
-        NSTimeInterval delay = launched ? kWarmupDelay : 0.0;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)),
-                       dispatch_get_main_queue(), ^{
-            if (next) next();
-        });
     });
 }
 
@@ -150,9 +134,7 @@ static BOOL RunUIOpen(NSString *flag, NSString *value) {
     self.window.rootViewController = vc;
     [self.window makeKeyAndVisible];
 
-    [self launchIghosttyThen:^{
-        [self openClaudeInIghosttyAttempt:0];
-    }];
+    [self openClaudeInIghosttyAttempt:0];
 
     return YES;
 }
