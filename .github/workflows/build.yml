@@ -80,9 +80,9 @@ jobs:
           test -x "$SHELL"
           lipo -info "$SHELL" | grep -w '${{ matrix.cpu_arch }}'
           ldid -h "$SHELL"
-          strings "$SHELL" | grep -Fx '/usr/local/lib/claude-code/ighostty-shell'
-          strings "$SHELL" | grep -Fx '/usr/bin/zsh'
-          strings "$SHELL" | grep -Fx '/usr/local/bin/claude'
+          strings "$SHELL" | grep -Fq '/usr/local/lib/claude-code/ighostty-shell'
+          strings "$SHELL" | grep -Fq '/usr/bin/zsh'
+          strings "$SHELL" | grep -Fq '/usr/local/bin/claude'
           if strings "$SHELL" | grep -Fq '/var/jb/usr/bin/zsh'; then
             echo "adapter hardcodes a rootless zsh path"; exit 1
           fi
